@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nest;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 
@@ -248,16 +249,17 @@ namespace API.Controllers
         [HttpGet("Count")]
         public async Task<IActionResult> Count([FromQuery] int size = 10)
         {
-            var total = _elasticClient.Count<Patty>();
+            var total = await _elasticClient.CountAsync<Patty>();
             var totalPages = total.Count > 0 ? total.Count / size : 0;
 
-            var searchResponse = _elasticClient.Scroll<Patty>("1m", "ScrollId98735");
+            //var searchResponse = _elasticClient.Scroll<Patty>("1m", "ScrollId98735");
             var result = new
             {
-                Total = total,
+                Total = total.Count,
                 TotalPages = totalPages,
-                SearchResponse = searchResponse
+                //SearchResponse = searchResponse
             };
+            //var json = JsonSerializer.Serialize(result);
 
             return Ok(result);
         }
