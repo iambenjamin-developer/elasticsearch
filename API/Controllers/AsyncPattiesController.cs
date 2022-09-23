@@ -211,7 +211,7 @@ namespace API.Controllers
         }
 
         // DELETE api/<PattiesController>/5
-        [HttpDelete("V2{id:long}")]
+        [HttpDelete("V3{id:long}")]
         public async Task<IActionResult> DeleteV3(long id)
         {
             var getResponse = await _elasticClient.GetAsync<Patty>(id);
@@ -223,6 +223,23 @@ namespace API.Controllers
             }
 
             var deleteResponse = await _elasticClient.DeleteAsync<Patty>(entity.Id);
+
+            return NoContent();
+        }
+
+        // DELETE api/<PattiesController>/5
+        [HttpDelete("V4{id:long}")]
+        public async Task<IActionResult> DeleteV4(long id)
+        {
+            var getResponse = await _elasticClient.GetAsync<Patty>(id);
+            var entity = getResponse.Source;
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            var deleteResponse = await _elasticClient.DeleteAsync<Patty>(entity);
 
             return NoContent();
         }
