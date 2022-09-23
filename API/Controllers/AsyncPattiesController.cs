@@ -243,5 +243,23 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+
+        [HttpGet("Count")]
+        public async Task<IActionResult> Count([FromQuery] int size = 10)
+        {
+            var total = _elasticClient.Count<Patty>();
+            var totalPages = total.Count > 0 ? total.Count / size : 0;
+
+            var searchResponse = _elasticClient.Scroll<Patty>("1m", "ScrollId98735");
+            var result = new
+            {
+                Total = total,
+                TotalPages = totalPages,
+                SearchResponse = searchResponse
+            };
+
+            return Ok(result);
+        }
     }
 }
