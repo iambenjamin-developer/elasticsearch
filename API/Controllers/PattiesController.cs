@@ -15,39 +15,49 @@ namespace API.Controllers
     public class PattiesController : ControllerBase
     {
         private readonly IElasticClient _elasticClient;
+        public static string PattyIndex = "atenea-tv-patty";
 
         public PattiesController(IElasticClient elasticClient)
         {
             _elasticClient = elasticClient;
         }
+
         // GET: api/<PattiesController>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var searchResponse = _elasticClient.Search<Patty>(s => s
-                                .Index("atenea-tv-patty"));
+                                .Index(PattyIndex));
 
-            var people = searchResponse.Documents;
+            var patties = searchResponse.Documents;
 
-            var result = people?.ToList();
+            var result = patties?.ToList();
 
             return Ok(result);
         }
 
+
         // GET api/<PattiesController>/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
         public async Task<IActionResult> Get(long id)
         {
             var result = _elasticClient.Get<Patty>(id);
 
-            return Ok(result.Source);
+            var response = result.Source;
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(response);
         }
+
 
         // POST api/<PattiesController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreatePatty request)
         {
-            bool status;
             var random = new Random();
             long guid = random.Next(99, 999);
 
@@ -63,30 +73,19 @@ namespace API.Controllers
 
             if (response.IsValid)
             {
-                status = true;
-            }
-            else
-            {
-                status = false;
-            }
-
-            if (status)
-            {
                 return Created("NewPatty", patty);
             }
             else
             {
                 return BadRequest();
             }
-
         }
 
+
         // PUT api/<PattiesController>/5
-        [HttpPut("{id}")]
+        [HttpPut("{id:long}")]
         public async Task<IActionResult> Put(long id, [FromBody] UpdatePatty request)
         {
-            bool status;
-
             var patty = new Patty()
             {
                 Id = id,
@@ -96,20 +95,10 @@ namespace API.Controllers
             };
 
             var response = _elasticClient.Update<Patty, Patty>(patty.Id, d => d
-                            .Index("atenea-tv-patty")
+                            .Index(PattyIndex)
                             .Doc(patty));
 
             if (response.IsValid)
-            {
-                status = true;
-            }
-            else
-            {
-                status = false;
-            }
-
-
-            if (status)
             {
                 return Ok(patty);
             }
@@ -117,30 +106,24 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-
         }
 
-        // DELETE api/<PattiesController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            bool status;
 
+        // DELETE api/<PattiesController>/5
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> Delete(long id)
+        {
             var response = _elasticClient.Delete<Patty>(id, d => d
-                            .Index("atenea-tv-patty"));
+                            .Index(PattyIndex));
 
             if (response.IsValid)
             {
-                status = true;
+                return NoContent();
             }
             else
             {
-                status = false;
+                return NotFound();
             }
-
-            status.ToString();
-
-            return NoContent();
         }
     }
 }
