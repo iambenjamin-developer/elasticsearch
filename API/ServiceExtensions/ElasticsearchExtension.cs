@@ -9,6 +9,7 @@ namespace API.ServiceExtensions
     public static class ElasticsearchExtensions
     {
         public static string PattyIndex = "atenea-tv-patty";
+        public static string ProductIndex = "appname-servicename-product-index";
 
         public static void AddElasticsearch(this IServiceCollection services, IConfiguration configuration)
         {
@@ -29,6 +30,7 @@ namespace API.ServiceExtensions
 
             CreateIndex(client, defaultIndex);
             CreatePattyIndex(client, PattyIndex);
+            CreateProductIndex(client, ProductIndex);
         }
 
         #region Private Methods
@@ -50,6 +52,14 @@ namespace API.ServiceExtensions
         {
             var response = client.Indices.Create(indexName,
                 index => index.Map<Patty>(
+                    x => x.AutoMap()
+                ));
+        }
+
+        private static void CreateProductIndex(IElasticClient client, string indexName)
+        {
+            var response = client.Indices.Create(indexName,
+                index => index.Map<Product>(
                     x => x.AutoMap()
                 ));
         }
