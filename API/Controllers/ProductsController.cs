@@ -93,11 +93,12 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            //entity.Name = request.Name;
-            //entity.Stock = request.Stock;
+            entity.Name = request.Name;
+            entity.Stock = request.Stock;
+            entity.ExpirationDate = DateTime.Now.AddDays(90);
 
             var updateResponse = await _elasticClient.UpdateAsync<Product>(entity.Id, u => u
-                                               .Index(ProductIndex)
+                                               //.Index(ProductIndex)
                                                .Doc(entity));
 
             if (updateResponse.IsValid)
