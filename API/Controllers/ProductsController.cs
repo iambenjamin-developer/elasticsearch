@@ -41,7 +41,7 @@ namespace API.Controllers
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var response = await _elasticClient.GetAsync<Product>(id, p => p
+            var response = await _elasticClient.GetAsync<Product>(id, s => s
                                 .Index(ProductIndex));
 
             var entity = response.Source;
@@ -70,9 +70,9 @@ namespace API.Controllers
                 IsActive = true,
             };
 
-            //var response = await _elasticClient.IndexDocumentAsync<Product>(entity,
+            var response = await _elasticClient.IndexAsync(entity, s => s
+                                 .Index(ProductIndex));
 
-            var response = await _elasticClient.IndexAsync(entity, s => s.Index(ProductIndex));
             if (response.IsValid)
             {
                 return Created("NewProduct", entity);
@@ -87,7 +87,8 @@ namespace API.Controllers
         [HttpPut("{id:long}")]
         public async Task<IActionResult> Update(long id, [FromBody] UpdateProduct request)
         {
-            var getResponse = await _elasticClient.GetAsync<Product>(id);
+            var getResponse = await _elasticClient.GetAsync<Product>(id, s => s
+                                    .Index(ProductIndex));
 
             var entity = getResponse.Source;
 
@@ -100,9 +101,9 @@ namespace API.Controllers
             entity.Stock = request.Stock;
             entity.ExpirationDate = DateTime.Now.AddDays(90);
 
-            var updateResponse = await _elasticClient.UpdateAsync<Product>(entity.Id, u => u
-                                               //.Index(ProductIndex)
-                                               .Doc(entity));
+            var updateResponse = await _elasticClient.UpdateAsync<Product>(entity.Id, s => s
+                                                     .Index(ProductIndex)
+                                                     .Doc(entity));
 
             if (updateResponse.IsValid)
             {
@@ -118,7 +119,8 @@ namespace API.Controllers
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete(long id)
         {
-            var getResponse = await _elasticClient.GetAsync<Product>(id);
+            var getResponse = await _elasticClient.GetAsync<Product>(id, s => s
+                                                  .Index(ProductIndex));
             var entity = getResponse.Source;
 
             if (entity == null)
@@ -126,7 +128,8 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var deleteResponse = await _elasticClient.DeleteAsync<Product>(entity);
+            var deleteResponse = await _elasticClient.DeleteAsync<Product>(entity, s => s
+                                                     .Index(ProductIndex));
 
             if (deleteResponse.IsValid)
             {
@@ -136,7 +139,6 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-
 
         }
     }
