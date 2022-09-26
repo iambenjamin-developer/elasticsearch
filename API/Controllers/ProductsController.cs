@@ -25,6 +25,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] int size = 10)
         {
             var searchResponse = await _elasticClient.SearchAsync<Product>(s => s
+                                        .Index(ProductIndex)
                                         .Query(q => q.MatchAll())
                                         .Size(size)
                                         .Scroll("1m"));
@@ -40,7 +41,8 @@ namespace API.Controllers
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var response = await _elasticClient.GetAsync<Product>(id);
+            var response = await _elasticClient.GetAsync<Product>(id, p => p
+                                .Index(ProductIndex));
 
             var entity = response.Source;
 
@@ -68,8 +70,9 @@ namespace API.Controllers
                 IsActive = true,
             };
 
-            var response = await _elasticClient.IndexDocumentAsync(entity);
+            //var response = await _elasticClient.IndexDocumentAsync<Product>(entity,
 
+            var response = await _elasticClient.IndexAsync(entity, s => s.Index(ProductIndex));
             if (response.IsValid)
             {
                 return Created("NewProduct", entity);
