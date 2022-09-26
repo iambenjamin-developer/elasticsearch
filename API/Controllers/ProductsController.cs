@@ -20,6 +20,27 @@ namespace API.Controllers
             _elasticClient = elasticClient;
         }
 
+        [HttpGet("Count")]
+        public async Task<IActionResult> Count([FromQuery] int size = 10)
+        {
+            var response = await _elasticClient.CountAsync<Product>(s => s
+                                 .Index(ProductIndex));
+
+            var total = response.Count;
+
+            var totalPages = total > 0 ? total / size : 0;
+
+            //var searchResponse = _elasticClient.Scroll<Patty>("1m", "ScrollId98735");
+            var result = new
+            {
+                Total = total,
+                TotalPages = totalPages,
+                //SearchResponse = searchResponse
+            };
+            //var json = JsonSerializer.Serialize(result);
+
+            return Ok(result);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int size = 10)
