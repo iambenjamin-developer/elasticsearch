@@ -132,6 +132,26 @@ namespace API.Controllers
 
             return Ok(searchResponse.Documents);
         }
+
+
+        [HttpPost("between-dates")]
+        public async Task<IActionResult> BetweenDates([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(s => s
+            .Query(q => q
+                .Bool(b => b
+                    //I'm using date range in filter context as I don't want elasticsearch
+                    //to calculate score for each document found,
+                    //should be faster and likely it will be cached
+                    .Filter(f =>
+                        f.DateRange(dt => dt.Field(field => field.DateOfElaboration)
+                        .GreaterThanOrEquals(request.DateFrom)
+                        .LessThanOrEquals(request.DateTo)
+                            )))));
+
+            return Ok(searchResponse.Documents);
+
+        }
     }
 
 }
