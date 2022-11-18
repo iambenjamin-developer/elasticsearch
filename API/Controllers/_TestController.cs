@@ -152,6 +152,20 @@ namespace API.Controllers
             return Ok(searchResponse.Documents);
 
         }
+
+        
+        [HttpPost("CompararEnteros")]
+        public async Task<IActionResult> CompararEnteros([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(x => x.Query(q => q
+                                            .Bool(bq => bq
+                                            .Filter(fq => fq.TermRange(t => t.Field(f => f.Stock).GreaterThan("1").LessThan("10"))
+                                                    ))));
+
+            return Ok(searchResponse.Documents);
+
+        }
+        
     }
 
 }
