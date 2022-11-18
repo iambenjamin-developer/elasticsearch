@@ -27,6 +27,7 @@ namespace API.Controllers
         {
             var searchResponse = await _elasticClient.SearchAsync<Patty>(s => s
                                         .Query(q => q.MatchAll())
+                                        //.From(1)
                                         .Size(size)
                                         .Scroll("1m"));
 
