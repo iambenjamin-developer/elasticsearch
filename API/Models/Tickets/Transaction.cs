@@ -13,8 +13,6 @@ namespace API.Models.Tickets
 
         public string Document { get; set; }
 
-        public string Observations { get; set; }
-
         public string TriggeredBy { get; set; } // Para el usuario que lanza la transacción
 
         public long? OperatorId { get; set; }
