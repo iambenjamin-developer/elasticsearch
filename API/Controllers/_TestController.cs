@@ -96,6 +96,42 @@ namespace API.Controllers
 
             return Ok(searchResponse.Documents);
         }
+
+        [HttpPost("mayor-que")]
+        public async Task<IActionResult> MayorQue([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(s => s
+            .Query(q => q
+                .Bool(b => b
+                    //I'm using date range in filter context as I don't want elasticsearch
+                    //to calculate score for each document found,
+                    //should be faster and likely it will be cached
+                    .Filter(f =>
+                        f.DateRange(dt => dt
+                            .Field(field => field.DateOfElaboration)
+                            .GreaterThan(request.DateFrom)
+                            )))));
+
+            return Ok(searchResponse.Documents);
+        }
+
+        [HttpPost("mayor-o-igual-que")]
+        public async Task<IActionResult> MayorOIgualQue([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(s => s
+            .Query(q => q
+                .Bool(b => b
+                    //I'm using date range in filter context as I don't want elasticsearch
+                    //to calculate score for each document found,
+                    //should be faster and likely it will be cached
+                    .Filter(f =>
+                        f.DateRange(dt => dt
+                            .Field(field => field.DateOfElaboration)
+                            .GreaterThanOrEquals(request.DateFrom)
+                            )))));
+
+            return Ok(searchResponse.Documents);
+        }
     }
 
 }
