@@ -35,5 +35,19 @@ namespace API.Controllers
             return Ok(result);
         }
 
+
+        [HttpPost("filter-by-name")]
+        public async Task<IActionResult> ByKeywords([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(x => x.Query(q => q
+                                                   .Bool(bq => bq
+                                                   .Filter(fq => fq.Terms(t => t.Field(f => f.Name).Terms(request.KeyWords))
+                                                         //fq => fq.Terms(t => t.Field(f => f.Color).Terms(colorList))
+                                                           ))));
+
+            return Ok(searchResponse.Documents);
+        }
     }
+
 }
+
