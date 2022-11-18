@@ -2,6 +2,7 @@
 using API.Models.Tests;
 using Microsoft.AspNetCore.Mvc;
 using Nest;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -42,7 +43,7 @@ namespace API.Controllers
             ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(x => x.Query(q => q
                                                    .Bool(bq => bq
                                                    .Filter(fq => fq.Terms(t => t.Field(f => f.Name).Terms(request.KeyWords))
-                                                         //fq => fq.Terms(t => t.Field(f => f.Color).Terms(colorList))
+                                                           //fq => fq.Terms(t => t.Field(f => f.Color).Terms(colorList))
                                                            ))));
 
             return Ok(searchResponse.Documents);
@@ -56,6 +57,42 @@ namespace API.Controllers
                                                    .Filter(fq => fq.Terms(t => t.Field(f => f.Name).Terms(request.KeyWords)),
                                                            fq => fq.Terms(t => t.Field(f => f.Stock).Terms(request.Quantity))
                                                            ))));
+
+            return Ok(searchResponse.Documents);
+        }
+
+        [HttpPost("menor-que")]
+        public async Task<IActionResult> MenorQue([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(s => s
+            .Query(q => q
+                .Bool(b => b
+                    //I'm using date range in filter context as I don't want elasticsearch
+                    //to calculate score for each document found,
+                    //should be faster and likely it will be cached
+                    .Filter(f =>
+                        f.DateRange(dt => dt
+                            .Field(field => field.DateOfElaboration)
+                            .LessThan(request.DateTo)
+                            )))));
+
+            return Ok(searchResponse.Documents);
+        }
+
+        [HttpPost("menor-o-igual-que")]
+        public async Task<IActionResult> MenorOIgualQue([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(s => s
+            .Query(q => q
+                .Bool(b => b
+                    //I'm using date range in filter context as I don't want elasticsearch
+                    //to calculate score for each document found,
+                    //should be faster and likely it will be cached
+                    .Filter(f =>
+                        f.DateRange(dt => dt
+                            .Field(field => field.DateOfElaboration)
+                            .LessThanOrEquals(request.DateTo)
+                            )))));
 
             return Ok(searchResponse.Documents);
         }
