@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace API.Models.Tests
 {
@@ -9,6 +10,8 @@ namespace API.Models.Tests
         public int Stock { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
+
+        public List<string> KeyWords { get; set; } = new List<string>();
 
         private int _size;
 
