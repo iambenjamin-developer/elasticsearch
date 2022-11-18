@@ -91,7 +91,7 @@ namespace API.Controllers
                 Id = id,
                 Name = request.Name,
                 Stock = request.Stock,
-                DateOfElaboration = DateTime.MinValue
+                DateOfElaboration = request.DateOfElaboration
             };
 
             var response = _elasticClient.Update<Patty, Patty>(patty.Id, d => d

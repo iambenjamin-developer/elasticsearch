@@ -108,7 +108,7 @@ namespace API.Controllers
                 Id = id,
                 Name = request.Name,
                 Stock = request.Stock,
-                DateOfElaboration = DateTime.MinValue
+                DateOfElaboration = request.DateOfElaboration
             };
 
             var response = await _elasticClient.UpdateAsync<Patty>(entity.Id, u => u
@@ -135,7 +135,7 @@ namespace API.Controllers
                 Id = id,
                 Name = request.Name,
                 Stock = request.Stock,
-                DateOfElaboration = DateTime.MinValue
+                DateOfElaboration = request.DateOfElaboration
             };
 
             var response = await _elasticClient.UpdateAsync<Patty>(entity.Id, u => u
@@ -161,7 +161,7 @@ namespace API.Controllers
                 Id = id,
                 Name = request.Name,
                 Stock = request.Stock,
-                DateOfElaboration = DateTime.MinValue
+                DateOfElaboration = request.DateOfElaboration
             };
 
             var response = await _elasticClient.UpdateAsync<object>(entity.Id, u => u
