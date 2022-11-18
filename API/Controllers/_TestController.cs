@@ -47,6 +47,18 @@ namespace API.Controllers
 
             return Ok(searchResponse.Documents);
         }
+
+        [HttpPost("filter-by-two-properties")]
+        public async Task<IActionResult> ByTwoProperties([FromBody] RequestBody request)
+        {
+            ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(x => x.Query(q => q
+                                                   .Bool(bq => bq
+                                                   .Filter(fq => fq.Terms(t => t.Field(f => f.Name).Terms(request.KeyWords)),
+                                                           fq => fq.Terms(t => t.Field(f => f.Stock).Terms(request.Quantity))
+                                                           ))));
+
+            return Ok(searchResponse.Documents);
+        }
     }
 
 }

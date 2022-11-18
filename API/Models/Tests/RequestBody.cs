@@ -11,8 +11,6 @@ namespace API.Models.Tests
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
 
-        public List<string> KeyWords { get; set; } = new List<string>();
-
         private int _size;
 
         public int Size
@@ -20,6 +18,9 @@ namespace API.Models.Tests
             get { return _size == 0 ? 10 : _size; }
             set { _size = value; }
         }
+
+        public List<string> KeyWords { get; set; } = new List<string>();
+        public List<int> Quantity { get; set; } = new List<int>();
 
     }
 }
