@@ -1,4 +1,5 @@
 ﻿using API.Models;
+using API.Models.Commons;
 using API.Models.Products;
 using Microsoft.AspNetCore.Mvc;
 using Nest;
@@ -41,13 +42,17 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int size = 10)
+        public async Task<IActionResult> GetAll([FromQuery] QueryStringParameters queryString)
         {
+            var countResponse = await _elasticClient.CountAsync<Product>();
+            var totalPages = (int)Math.Ceiling(countResponse.Count / (double)queryString.PageSize);
+
             var searchResponse = await _elasticClient.SearchAsync<Product>(s => s
                                         .Query(q => q.MatchAll())
-                                        //.From(1)
-                                        .Size(size)
-                                        .Scroll("1m"));
+                                        .From((queryString.PageNumber - 1) * queryString.PageSize)
+                                        .Size(queryString.PageSize)
+         
+                                        );
 
             var entities = searchResponse.Documents;
 
