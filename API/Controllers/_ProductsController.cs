@@ -23,24 +23,7 @@ namespace API.Controllers
             _elasticClient = elasticClient;
         }
 
-        [HttpGet("Count")]
-        public async Task<IActionResult> Count([FromQuery] int size = 10)
-        {
-            var total = await _elasticClient.CountAsync<Product>();
-            var totalPages = total.Count > 0 ? total.Count / size : 0;
-
-            //var searchResponse = _elasticClient.Scroll<Patty>("1m", "ScrollId98735");
-            var result = new
-            {
-                Total = total.Count,
-                TotalPages = totalPages,
-                //SearchResponse = searchResponse
-            };
-            //var json = JsonSerializer.Serialize(result);
-
-            return Ok(result);
-        }
-
+      
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryStringParameters queryString)
         {
