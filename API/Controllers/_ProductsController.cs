@@ -35,9 +35,7 @@ namespace API.Controllers
             var searchResponse = await _elasticClient.SearchAsync<Product>(s => s
                                         .Query(q => q.MatchAll())
                                         .From((queryString.PageNumber - 1) * queryString.PageSize)
-                                        .Size(queryString.PageSize)
-
-                                        );
+                                        .Size(queryString.PageSize));
 
             var entities = searchResponse.Documents;
 
