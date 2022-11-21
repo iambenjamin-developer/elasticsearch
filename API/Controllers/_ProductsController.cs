@@ -100,7 +100,7 @@ namespace API.Controllers
                                         .Query(q => q.MatchAll())
                                         .From((queryString.PageNumber - 1) * queryString.PageSize)
                                         .Size(queryString.PageSize)
-                                        .Sort(x => x.Ascending(y => y.Id))
+                                        .Sort(x => x.Descending(y => y.Id))
                                         );
 
             var entities = searchResponse.Documents;
@@ -121,5 +121,22 @@ namespace API.Controllers
             };
             return Ok(response);
         }
+
+        //public async Task<PagedItems<Product>> FindAsync(string searchTerm, int skip, int take)
+        //{
+           
+        //    var response = await _elasticClient.SearchAsync<Product>(s => s
+        //        .Index("")
+        //        .From(skip).Size(take)
+        //        .Query(q => q.MultiMatch(m => m.Fields(f => f
+        //            .Field(u => u.Email)
+        //            .Field(u => u.FirstName)
+        //            .Field(u => u.LastName))
+        //            .Query(searchTerm)))
+        //        .Sort(q => q.Ascending(u => u.Email.Suffix("keyword"))));
+        //    var count = await client.CountAsync<Product>(s => s.Index(_elasticConfiguration.GetIndex()));
+        //    return new PagedItems<Product> { Items = response.Documents.ToArray(), Total = count.Count };
+        //}
+
     }
 }
