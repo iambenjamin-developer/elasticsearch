@@ -1,4 +1,5 @@
 ﻿using API.Models;
+using API.Models.Products;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nest;
