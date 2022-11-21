@@ -23,7 +23,7 @@ namespace API.Controllers
             _elasticClient = elasticClient;
         }
 
-      
+
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryStringParameters queryString)
         {
@@ -43,14 +43,16 @@ namespace API.Controllers
 
             var result = entities?.ToList();
 
+
+
             var response = new
             {
-                CurrentPage = 999,
+                CurrentPage = queryString.PageNumber,
                 PageSize = queryString.PageSize,
                 TotalPages = totalPages,
                 TotalCount = totalCount,
-                HasPreviousPage = false,
-                HasNextPage = true,
+                HasPreviousPage = queryString.PageNumber > 1,
+                HasNextPage = queryString.PageNumber < totalPages,
                 Items = result
             };
             return Ok(response);
