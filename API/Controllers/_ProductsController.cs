@@ -41,7 +41,7 @@ namespace API.Controllers
 
  
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto request)
+        public async Task<IActionResult> Create([FromBody] CreateProductDto request)
         {
             var random = new Random();
             long randomId = random.Next(99, 999);
