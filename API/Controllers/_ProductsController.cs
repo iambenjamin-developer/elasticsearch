@@ -45,20 +45,32 @@ namespace API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] QueryStringParameters queryString)
         {
             var countResponse = await _elasticClient.CountAsync<Product>();
-            var totalPages = (int)Math.Ceiling(countResponse.Count / (double)queryString.PageSize);
+            var totalCount = countResponse.Count;
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)queryString.PageSize);
 
             var searchResponse = await _elasticClient.SearchAsync<Product>(s => s
                                         .Query(q => q.MatchAll())
                                         .From((queryString.PageNumber - 1) * queryString.PageSize)
                                         .Size(queryString.PageSize)
-         
+
                                         );
 
             var entities = searchResponse.Documents;
 
             var result = entities?.ToList();
 
-            return Ok(result);
+            var response = new
+            {
+                CurrentPage = 999,
+                PageSize = queryString.PageSize,
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                HasPreviousPage = false,
+                HasNextPage = true,
+                Items = result
+            };
+            return Ok(response);
         }
 
         [HttpPost]
