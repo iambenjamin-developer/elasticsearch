@@ -87,5 +87,39 @@ namespace API.Controllers
             }
         }
 
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search([FromQuery] QueryStringParameters queryString)
+        {
+            var countResponse = await _elasticClient.CountAsync<Product>();
+            var totalCount = countResponse.Count;
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)queryString.PageSize);
+
+            var searchResponse = await _elasticClient.SearchAsync<Product>(s => s
+                                        .Query(q => q.MatchAll())
+                                        .From((queryString.PageNumber - 1) * queryString.PageSize)
+                                        .Size(queryString.PageSize)
+                                        .Sort(x => x.Ascending(y => y.Id))
+                                        );
+
+            var entities = searchResponse.Documents;
+
+            var result = entities?.ToList();
+
+
+
+            var response = new
+            {
+                CurrentPage = queryString.PageNumber,
+                PageSize = queryString.PageSize,
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                HasPreviousPage = queryString.PageNumber > 1,
+                HasNextPage = queryString.PageNumber < totalPages,
+                Items = result
+            };
+            return Ok(response);
+        }
     }
 }
