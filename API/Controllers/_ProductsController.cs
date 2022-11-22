@@ -250,6 +250,10 @@ namespace API.Controllers
 
             //Filtrar por Fecha de vencimiento.Formato:
             //    2022-11-30T08:47:53.7320000Z
+            //
+//2022 - 01 - 01T00: 00:00.0000000Z
+
+//2022 - 12 - 31T23: 59:59.9999999Z
             if (!string.IsNullOrWhiteSpace(dateOfExpiration))
             {
                 searchDescriptor.Query(q => q.Match(m => m.Field(x => x.DateOfExpiration).Query(dateOfExpiration)));
