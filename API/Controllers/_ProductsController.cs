@@ -184,11 +184,10 @@ namespace API.Controllers
             SearchByProperties(query, ref searchDescriptor);
 
             var res = await _elasticClient.SearchAsync<Product>(searchDescriptor); // Usar el tipo dynamic para explorar el resultado completo que devuelve ES
-            //var res1 = await elasticClient.SearchAsync<APMHistoryRecord>(searchDescriptor); // TODO: Usar implementaci?n con el tipo APMHistoryRecord
+
             List<Product> entities = new List<Product>();
             foreach (var row in res.Documents)
             {
-                entities.Add(row);
                 try
                 {
                     entities.Add(row);
@@ -206,10 +205,104 @@ namespace API.Controllers
 
         private void SearchByProperties(QueryStringParameters query, ref SearchDescriptor<Product> searchDescriptor)
         {
-            searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
+            //searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
+
+            searchDescriptor.Query(q => q.Match(m => m.Field("name").Query("guitarra")));
+
+            //string search = query.SearchQuery?.Trim();
+            //string user = query.FilterUser?.Trim();
+            //string type = query.FilterType;
+            //int status = query.FilterStatus;
+            //int operation = query.FilterOperation;
+            //string dateFrom = query.DateFrom?.Trim();
+            //string dateTo = query.DateTo?.Trim();
+            //string operatorId = query.OperatorId != null && query.OperatorId > 0 ? query.OperatorId.ToString() : string.Empty;
+            //string typeQuery, operationQuery, statusQuery;
+            //typeQuery = operationQuery = statusQuery = String.Empty;
 
 
+            //if (string.IsNullOrWhiteSpace(search) && string.IsNullOrWhiteSpace(user) && type == "0" && status == 0 && operation == 0 && string.IsNullOrWhiteSpace(dateFrom) && string.IsNullOrWhiteSpace(dateTo) && string.IsNullOrWhiteSpace(operatorId))
+            //{
+
+            //    searchDescriptor.Query(q => q.MatchAll()).Sort(s => s.Descending(f => f.Id));
+            //}
+            //else
+            //{
+
+            //    var entityQuery = new QueryStringQuery();
+            //    if (!string.IsNullOrEmpty(search))
+            //    {
+            //        entityQuery.Query = $"url.query:*{search}* OR labels.message:*{search}* OR labels.operatorId:*{search}* OR labels.operatorName:*{search}* OR http.request.body.original:*{search}*";
+            //    }
+
+            //    // Filtro de b?squeda full text
+            //    var searchQuery = new WildcardQuery();
+
+            //    if (!String.IsNullOrWhiteSpace(type) && type != "0")
+            //    {
+            //        searchQuery.Value = $"*{type}*";
+            //        searchQuery.CaseInsensitive = true;
+            //        searchQuery.Field = "labels.message";
+            //        searchQuery.Boost = 1.1;
+            //    }
+            //    var userQuery = new QueryStringQuery();
+
+            //    if (!String.IsNullOrWhiteSpace(user))
+            //    {
+            //        userQuery.Fields = "user.name";
+            //        userQuery.Fields.And("user.email");
+            //        userQuery.Query = "*" + user + "*";
+            //        userQuery.AnalyzeWildcard = true;
+            //    }
+
+            //    //Filtrar por OperatorId
+            //    var operatorQuery = new QueryStringQuery();
+
+            //    if (!String.IsNullOrWhiteSpace(operatorId))
+            //    {
+            //        operatorQuery.Fields = "labels.operatorId";
+            //        operatorQuery.Fields.And("labels.operatorId");
+            //        operatorQuery.Query = operatorId;
+            //        operatorQuery.AnalyzeWildcard = true;
+            //    }
+
+            //    // Filtro de fecha
+            //    var dateRangeQuery = new DateRangeQuery();
+            //    dateRangeQuery.Field = "@timestamp";
+            //    DateMath dmFrom = DateMath.Anchored(new DateTime(2020, 01, 01));
+            //    DateMath dmTo = DateMath.Anchored(new DateTime().AddDays(1));
+            //    if (!string.IsNullOrWhiteSpace(dateFrom))
+            //    {
+            //        if (DateTime.TryParse(dateFrom, out DateTime from))
+            //        {
+            //            dmFrom = DateMath.Anchored(from);
+            //            dateRangeQuery.GreaterThanOrEqualTo = dmFrom;
+            //        }
+            //    }
+
+            //    if (!string.IsNullOrWhiteSpace(dateTo))
+            //    {
+            //        if (DateTime.TryParse(dateTo, out DateTime to))
+            //        {
+            //            dmTo = DateMath.Anchored(to.AddDays(1));
+            //            dateRangeQuery.LessThanOrEqualTo = dmTo;
+            //        }
+            //    }
+
+            //    // Descriptor de b?squeda
+            //    searchDescriptor.Query(q => entityQuery && searchQuery && userQuery && dateRangeQuery && operatorQuery);
+
+            //    // Filtro de ordenaci?n
+            //    searchDescriptor.Sort(s => s.Descending(f => f.Id));
+
+            //    /*
+            //    searchDescriptor.Query(q => 
+            //        q.QueryString(qs => qs.Query(result))
+            //        && q.DateRange( dr => dr.Field("@timestamp").GreaterThanOrEquals(dmFrom).LessThanOrEquals(dmTo))
+            //    ).Sort(s => s.Descending(f => f.timestamp.us));
+            //    */
         }
-
     }
+
 }
+
