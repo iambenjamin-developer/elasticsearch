@@ -207,8 +207,36 @@ namespace API.Controllers
         {
             //searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
 
-            searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Name).Query("guitarra")));
-            searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Stock).Query("3")));
+
+            string id = query.FilterById?.Trim();
+            string name = query.FilterByName?.Trim();
+            string stock = query.FilterByStock?.Trim();
+
+            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(stock))
+            {
+                searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
+
+                return;
+            }
+
+            //Filtrar por ID
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Id).Query(id)));
+            }
+
+            //Filtrar por nombre
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Name).Query(name)));
+            }
+
+            //Filtrar por Stock
+            if (!string.IsNullOrWhiteSpace(stock))
+            {
+                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Stock).Query(stock)));
+            }
+
 
             //string search = query.SearchQuery?.Trim();
             //string user = query.FilterUser?.Trim();
