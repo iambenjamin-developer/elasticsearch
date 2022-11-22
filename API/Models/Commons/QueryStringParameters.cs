@@ -17,5 +17,6 @@
         public string FilterByGuid { get; set; }
         public string FilterByName { get; set; }
         public string FilterByStock { get; set; }
+        public string FilterByDateOfExpiration { get; set; }
     }
 }

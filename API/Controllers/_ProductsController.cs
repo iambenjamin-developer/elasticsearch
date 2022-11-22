@@ -213,8 +213,9 @@ namespace API.Controllers
             string name = query.FilterByName?.Trim();
             string stock = query.FilterByStock?.Trim();
             string order = query.Order?.Trim();
+            string dateOfExpiration = query.FilterByDateOfExpiration?.Trim();
 
-            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(stock) && string.IsNullOrWhiteSpace(guid) && string.IsNullOrWhiteSpace(order))
+            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(stock) && string.IsNullOrWhiteSpace(guid) && string.IsNullOrWhiteSpace(order) && string.IsNullOrWhiteSpace(dateOfExpiration))
             {
                 searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
 
@@ -245,6 +246,13 @@ namespace API.Controllers
                 searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Stock).Query(stock)));
             }
 
+            //Filtrar por Fecha de vencimiento.Formato:
+            //    2022-11-30T08:47:53.7320000Z
+            if (!string.IsNullOrWhiteSpace(dateOfExpiration))
+            {
+                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.DateOfExpiration).Query(dateOfExpiration)));
+            }
+
             //Ordenar
             if (!string.IsNullOrWhiteSpace(order))
             {
@@ -256,9 +264,26 @@ namespace API.Controllers
                 {
                     searchDescriptor.Sort(x => x.Descending(y => y.Id));
                 }
-
             }
 
+
+            //searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateOfExpiration)));
+
+            /*
+              ISearchResponse<Patty> searchResponse = await _elasticClient.SearchAsync<Patty>(s => s
+            .Query(q => q
+                .Bool(b => b
+                    //I'm using date range in filter context as I don't want elasticsearch
+                    //to calculate score for each document found,
+                    //should be faster and likely it will be cached
+                    .Filter(f =>
+                        f.DateRange(dt => dt
+                            .Field(field => field.DateOfElaboration)
+                            .LessThan(request.DateTo)
+                            )))));
+
+            return Ok(searchResponse.Documents);
+             */
             //string search = query.SearchQuery?.Trim();
             //string user = query.FilterUser?.Trim();
             //string type = query.FilterType;
