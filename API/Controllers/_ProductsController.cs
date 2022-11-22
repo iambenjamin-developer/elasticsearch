@@ -208,6 +208,7 @@ namespace API.Controllers
             //searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
 
             searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Name).Query("guitarra")));
+            searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Stock).Query("3")));
 
             //string search = query.SearchQuery?.Trim();
             //string user = query.FilterUser?.Trim();
