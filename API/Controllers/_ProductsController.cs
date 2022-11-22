@@ -209,10 +209,11 @@ namespace API.Controllers
 
 
             string id = query.FilterById?.Trim();
+            string guid = query.FilterByGuid?.Trim();
             string name = query.FilterByName?.Trim();
             string stock = query.FilterByStock?.Trim();
 
-            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(stock))
+            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(stock) && string.IsNullOrWhiteSpace(guid))
             {
                 searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
 
@@ -223,6 +224,12 @@ namespace API.Controllers
             if (!string.IsNullOrWhiteSpace(id))
             {
                 searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Id).Query(id)));
+            }
+
+            //Filtrar por GUID
+            if (!string.IsNullOrWhiteSpace(guid))
+            {
+                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Guid).Query(guid)));
             }
 
             //Filtrar por nombre

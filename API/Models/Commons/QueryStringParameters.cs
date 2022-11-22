@@ -12,6 +12,7 @@
         //public object Order { get; set; }
 
         public string FilterById { get; set; }
+        public string FilterByGuid { get; set; }
         public string FilterByName { get; set; }
         public string FilterByStock { get; set; }
     }
