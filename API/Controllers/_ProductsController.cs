@@ -1,4 +1,4 @@
-﻿using API.Models;
+﻿using API.Extensions;
 using API.Models.Commons;
 using API.Models.Products;
 using Microsoft.AspNetCore.Mvc;
@@ -124,7 +124,7 @@ namespace API.Controllers
 
         //public async Task<PagedItems<Product>> FindAsync(string searchTerm, int skip, int take)
         //{
-           
+
         //    var response = await _elasticClient.SearchAsync<Product>(s => s
         //        .Index("")
         //        .From(skip).Size(take)
@@ -137,6 +137,19 @@ namespace API.Controllers
         //    var count = await client.CountAsync<Product>(s => s.Index(_elasticConfiguration.GetIndex()));
         //    return new PagedItems<Product> { Items = response.Documents.ToArray(), Total = count.Count };
         //}
+
+        [HttpGet("test")]
+        public async Task<IActionResult> Test([FromQuery] QueryStringParameters queryString)
+        {
+         
+            var searchResponse = _elasticClient.SearchWithMatch<Product>(f => f.Stock);
+
+            var entities = searchResponse.Documents;
+
+            var result = entities?.ToList();
+            
+            return Ok(result);
+        }
 
     }
 }
