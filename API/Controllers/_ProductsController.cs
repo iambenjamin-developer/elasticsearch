@@ -1,9 +1,13 @@
-﻿using API.Extensions;
+﻿using API.Commons;
+using API.Extensions;
 using API.Models.Commons;
 using API.Models.Products;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Nest;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +20,13 @@ namespace API.Controllers
     {
 
         private readonly IElasticClient _elasticClient;
+        private readonly IConfiguration _configuration;
         public static string ProductIndex = "project-microservice-products";
 
-        public _ProductsController(IElasticClient elasticClient)
+        public _ProductsController(IElasticClient elasticClient, IConfiguration configuration)
         {
             _elasticClient = elasticClient;
+            _configuration = configuration;
         }
 
 
@@ -141,14 +147,68 @@ namespace API.Controllers
         [HttpGet("test")]
         public async Task<IActionResult> Test([FromQuery] QueryStringParameters queryString)
         {
-         
+
             var searchResponse = _elasticClient.SearchWithMatch<Product>(f => f.Stock);
 
             var entities = searchResponse.Documents;
 
             var result = entities?.ToList();
-            
+
             return Ok(result);
+        }
+
+        [HttpGet("_avatel")]
+        public async Task<IActionResult> Avatel([FromQuery] QueryStringParameters query)
+        {
+            /*
+            var res1 = elasticClient.Search<HistoryRecord>(s => s.Index("apm-7.10.1-transaction")
+            .From(0)
+            .Size(100)
+            .Query( q => q
+            .Term(t => t.RequestBody, "") || q
+            .Term(t => t.ResponseBody, "") || q
+            .Match(mq => mq.Field(f => f.RequestBody).Query(""))
+            ));
+            */
+
+            var index = _configuration.GetValue<string>("ElasticApm:ProductIndex");
+
+            var from = (query.PageNumber - 1) * query.PageSize;
+            var size = query.PageSize;
+
+            var searchDescriptor = new SearchDescriptor<Product>()
+                    .Index(index)
+                    .From(from)
+                    .Size(size);
+
+            SearchByProperties(query, ref searchDescriptor);
+
+            var res = await _elasticClient.SearchAsync<Product>(searchDescriptor); // Usar el tipo dynamic para explorar el resultado completo que devuelve ES
+            //var res1 = await elasticClient.SearchAsync<APMHistoryRecord>(searchDescriptor); // TODO: Usar implementaci?n con el tipo APMHistoryRecord
+            List<Product> entities = new List<Product>();
+            foreach (var row in res.Documents)
+            {
+                entities.Add(row);
+                try
+                {
+                    entities.Add(row);
+                }
+                catch (Exception e)
+                {
+                    entities.Add(new Product()); // Si hay un error, inserta un elemento vac?o. Esto se hace para favorecer la detecci?n de errores.
+                }
+            }
+            var resultadoPaginado = new PagedList<Product>(entities, (int)res.Total, query.PageNumber, query.PageSize);
+
+            return new ContentResult { Content = resultadoPaginado.ToJson(), ContentType = "application/json", };
+        }
+
+
+        private void SearchByProperties(QueryStringParameters query, ref SearchDescriptor<Product> searchDescriptor)
+        {
+            searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
+
+
         }
 
     }
