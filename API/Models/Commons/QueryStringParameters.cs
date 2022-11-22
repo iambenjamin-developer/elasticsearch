@@ -18,5 +18,7 @@
         public string FilterByName { get; set; }
         public string FilterByStock { get; set; }
         public string FilterByDateOfExpiration { get; set; }
+        public string FilterDateFrom { get; set; }
+        public string FilterDateTo { get; set; }
     }
 }

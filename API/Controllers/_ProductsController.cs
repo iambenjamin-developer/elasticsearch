@@ -214,8 +214,10 @@ namespace API.Controllers
             string stock = query.FilterByStock?.Trim();
             string order = query.Order?.Trim();
             string dateOfExpiration = query.FilterByDateOfExpiration?.Trim();
+            string dateFrom = query.FilterDateFrom?.Trim();
+            string dateTo = query.FilterDateTo?.Trim();
 
-            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(stock) && string.IsNullOrWhiteSpace(guid) && string.IsNullOrWhiteSpace(order) && string.IsNullOrWhiteSpace(dateOfExpiration))
+            if (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(stock) && string.IsNullOrWhiteSpace(guid) && string.IsNullOrWhiteSpace(order) && string.IsNullOrWhiteSpace(dateOfExpiration) && string.IsNullOrWhiteSpace(dateFrom) && string.IsNullOrWhiteSpace(dateTo))
             {
                 searchDescriptor.Query(s => s.MatchAll()).Sort(x => x.Descending(y => y.Id));
 
@@ -253,16 +255,29 @@ namespace API.Controllers
                 searchDescriptor.Query(q => q.Match(m => m.Field(x => x.DateOfExpiration).Query(dateOfExpiration)));
             }
 
+            //Desde
+            if (!string.IsNullOrWhiteSpace(dateFrom))
+            {
+                searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateFrom)));
+            }
+
+            //Hasta
+            if (!string.IsNullOrWhiteSpace(dateTo))
+            {
+                searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).LessThanOrEquals(dateTo)));
+            }
+
+
             //Ordenar
             if (!string.IsNullOrWhiteSpace(order))
             {
                 if (query.Order == "asc")
                 {
-                    searchDescriptor.Sort(x => x.Ascending(y => y.Id));
+                    searchDescriptor.Sort(x => x.Ascending(y => y.DateOfExpiration));
                 }
                 else
                 {
-                    searchDescriptor.Sort(x => x.Descending(y => y.Id));
+                    searchDescriptor.Sort(x => x.Descending(y => y.DateOfExpiration));
                 }
             }
 
