@@ -15,7 +15,6 @@ namespace API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-
         private readonly IElasticClient _elasticClient;
         private readonly IConfiguration _configuration;
         public static string ProductIndex = "project-microservice-products";
