@@ -45,9 +45,10 @@ namespace API.Models.Commons
         {
             get
             {
-                var dateFrom = Convert.ToDateTime(_filterDateFrom);
+                DateTime dateFrom;
+                DateTime.TryParse(_filterDateFrom, out dateFrom);
 
-                return dateFrom.ToString("yyyy-MM-ddT00:00:00Z");
+                return dateFrom == DateTime.MinValue ? null : dateFrom.ToString("yyyy-MM-ddT00:00:00Z");
             }
             set { _filterDateFrom = value; }
         }
@@ -56,9 +57,10 @@ namespace API.Models.Commons
         {
             get
             {
-                var dateTo = Convert.ToDateTime(_filterDateTo);
+                DateTime dateTo;
+                DateTime.TryParse(_filterDateTo, out dateTo);
 
-                return dateTo.ToString("yyyy-MM-ddT23:59:59Z");
+                return dateTo == DateTime.MinValue ? null : dateTo.ToString("yyyy-MM-ddT23:59:59Z");
             }
             set { _filterDateTo = value; }
         }
