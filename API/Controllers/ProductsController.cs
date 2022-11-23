@@ -30,19 +30,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryStringParameters query)
         {
-            /*
-            var res1 = elasticClient.Search<HistoryRecord>(s => s.Index("apm-7.10.1-transaction")
-            .From(0)
-            .Size(100)
-            .Query( q => q
-            .Term(t => t.RequestBody, "") || q
-            .Term(t => t.ResponseBody, "") || q
-            .Match(mq => mq.Field(f => f.RequestBody).Query(""))
-            ));
-            */
-
             var index = _configuration.GetValue<string>("ElasticApm:ProductIndex");
-
             var from = (query.PageNumber - 1) * query.PageSize;
             var size = query.PageSize;
 
@@ -289,6 +277,5 @@ ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
             //    */
         }
     }
-
 }
 
