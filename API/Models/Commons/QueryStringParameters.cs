@@ -36,7 +36,7 @@ namespace API.Models.Commons
             {
                 var dateExpiration = Convert.ToDateTime(_filterByDateOfExpiration);
 
-                return dateExpiration.ToString("yyyy-MM-ddT00:00:00Z");
+                return dateExpiration.ToString("yyyy-MM-ddTHH:mm:ssZ");
             }
             set { _filterByDateOfExpiration = value; }
         }
