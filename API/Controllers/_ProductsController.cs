@@ -153,8 +153,13 @@ namespace API.Controllers
             var entities = searchResponse.Documents;
 
             var result = entities?.ToList();
+            /*
+ https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
 
-            return Ok(result);
+Formatter	 Description	                 Example
+ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
+ */
+            return Ok(DateTime.Now.AddHours(9).ToString("yyyy-MM-ddTHH:mm:ssZ"));
         }
 
         [HttpGet("_avatel")]
@@ -251,9 +256,18 @@ namespace API.Controllers
             //Filtrar por Fecha de vencimiento.Formato:
             //    2022-11-30T08:47:53.7320000Z
             //
-//2022 - 01 - 01T00: 00:00.0000000Z
+            //2022 - 01 - 01T00: 00:00.0000000Z
 
-//2022 - 12 - 31T23: 59:59.9999999Z
+            //2022 - 12 - 31T23: 59:59.9999999Z
+
+            /*
+             https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
+
+Formatter	 Description	                 Example
+ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
+             */
+
+
             if (!string.IsNullOrWhiteSpace(dateOfExpiration))
             {
                 searchDescriptor.Query(q => q.Match(m => m.Field(x => x.DateOfExpiration).Query(dateOfExpiration)));
