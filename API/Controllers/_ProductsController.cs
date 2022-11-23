@@ -273,14 +273,22 @@ ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
                 searchDescriptor.Query(q => q.Match(m => m.Field(x => x.DateOfExpiration).Query(dateOfExpiration)));
             }
 
-            //Desde
-            if (!string.IsNullOrWhiteSpace(dateFrom))
+            //Desde y hasta 
+            if (!string.IsNullOrWhiteSpace(dateFrom) && !string.IsNullOrWhiteSpace(dateTo))
+            {
+                searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration)
+                                                                .GreaterThanOrEquals(dateFrom)
+                                                                .LessThanOrEquals(dateTo)));
+            }
+
+            //Solo desde
+            if (!string.IsNullOrWhiteSpace(dateFrom) && string.IsNullOrWhiteSpace(dateTo))
             {
                 searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateFrom)));
             }
 
-            //Hasta
-            if (!string.IsNullOrWhiteSpace(dateTo))
+            //Solo hasta
+            if (!string.IsNullOrWhiteSpace(dateTo) && string.IsNullOrWhiteSpace(dateFrom))
             {
                 searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).LessThanOrEquals(dateTo)));
             }
