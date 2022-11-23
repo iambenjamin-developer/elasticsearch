@@ -34,9 +34,9 @@ namespace API.Controllers
             var size = query.PageSize;
 
             var searchDescriptor = new SearchDescriptor<Product>()
-                    .Index(index)
-                    .From(from)
-                    .Size(size);
+                                        .Index(index)
+                                        .From(from)
+                                        .Size(size);
 
             SearchByProperties(query, ref searchDescriptor);
 
