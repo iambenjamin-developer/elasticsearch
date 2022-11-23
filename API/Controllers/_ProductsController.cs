@@ -270,8 +270,8 @@ ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
 
             if (!string.IsNullOrWhiteSpace(dateOfExpiration))
             {
-                string start = dateOfExpiration + "T00:00:00Z";
-                string end = dateOfExpiration + "T23:59:59Z";
+                string start = dateOfExpiration + "T00:00:00.0000000Z";
+                string end = dateOfExpiration + "T23:59:59.9999999Z";
 
                 searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration)
                                                           .GreaterThanOrEquals(start)
