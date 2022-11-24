@@ -80,7 +80,7 @@ namespace API.Controllers
 
                 return;
             }
-
+            
 
             //Filtrar por ID
             var termQueryId = new TermQuery();
@@ -97,10 +97,16 @@ namespace API.Controllers
                 searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Guid).Query(guid)));
             }
 
-            //Filtrar por nombre
+            //Filtrar por nombre ( full text)
+            var searchQuery = new WildcardQuery();
             if (!string.IsNullOrWhiteSpace(name))
             {
-                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Name).Query(name)));
+                //searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Name).Query(name)));
+
+                searchQuery.Value = $"*{name}*";
+                searchQuery.CaseInsensitive = true;
+                searchQuery.Field = "name";
+                searchQuery.Boost = 1.1;
             }
 
             //Filtrar por Stock
@@ -171,7 +177,7 @@ ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
                 }
             }
 
-            searchDescriptor.Query(q => termQueryId && termQueryStock);
+            searchDescriptor.Query(q => termQueryId && termQueryStock && searchQuery);
 
             //searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateOfExpiration)));
 
