@@ -81,10 +81,14 @@ namespace API.Controllers
                 return;
             }
 
+
             //Filtrar por ID
+            var termQueryId = new TermQuery();
             if (!string.IsNullOrWhiteSpace(id))
             {
-                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Id).Query(id)));
+                //searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Id).Query(id)));
+                termQueryId.Field = "id";
+                termQueryId.Value = id;
             }
 
             //Filtrar por GUID
@@ -100,9 +104,12 @@ namespace API.Controllers
             }
 
             //Filtrar por Stock
+            var termQueryStock = new TermQuery();
             if (!string.IsNullOrWhiteSpace(stock))
             {
-                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Stock).Query(stock)));
+                //searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Stock).Query(stock)));
+                termQueryStock.Field = "stock";
+                termQueryStock.Value = stock;
             }
 
             //Filtrar por Fecha de vencimiento.Formato:
@@ -164,6 +171,7 @@ ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
                 }
             }
 
+            searchDescriptor.Query(q => termQueryId && termQueryStock);
 
             //searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateOfExpiration)));
 
