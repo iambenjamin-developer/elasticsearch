@@ -80,7 +80,7 @@ namespace API.Controllers
 
                 return;
             }
-            
+
 
             //Filtrar por ID
             var termQueryId = new TermQuery();
@@ -131,38 +131,66 @@ namespace API.Controllers
 Formatter	 Description	                 Example
 ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
              */
+            /*
 
+           if (!string.IsNullOrWhiteSpace(dateOfExpiration))
+           {
+               string start = dateOfExpiration + "T00:00:00.0000000Z";
+               string end = dateOfExpiration + "T23:59:59.9999999Z";
 
-            if (!string.IsNullOrWhiteSpace(dateOfExpiration))
+               searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration)
+                                                         .GreaterThanOrEquals(start)
+                                                         .LessThanOrEquals(end)));
+           }
+
+           //Desde y hasta 
+           if (!string.IsNullOrWhiteSpace(dateFrom) && !string.IsNullOrWhiteSpace(dateTo))
+           {
+               searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration)
+                                                               .GreaterThanOrEquals(dateFrom)
+                                                               .LessThanOrEquals(dateTo)));
+           }
+
+           //Solo desde
+           if (!string.IsNullOrWhiteSpace(dateFrom) && string.IsNullOrWhiteSpace(dateTo))
+           {
+               searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateFrom)));
+           }
+
+           //Solo hasta
+           if (!string.IsNullOrWhiteSpace(dateTo) && string.IsNullOrWhiteSpace(dateFrom))
+           {
+               searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).LessThanOrEquals(dateTo)));
+           }
+           */
+
+            string start = dateOfExpiration + "T00:00:00.0000000Z";
+            string end = dateOfExpiration + "T23:59:59.9999999Z";
+
+            // Filtro de fecha
+            var dateRangeQuery = new DateRangeQuery();
+            dateRangeQuery.Field = "dateOfExpiration";
+            DateMath dmFrom = DateMath.Anchored(query.FilterDateFrom);
+            DateMath dmTo = DateMath.Anchored(query.FilterDateTo);
+            if (!string.IsNullOrWhiteSpace(query.FilterDateFrom))
             {
-                string start = dateOfExpiration + "T00:00:00.0000000Z";
-                string end = dateOfExpiration + "T23:59:59.9999999Z";
-
-                searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration)
-                                                          .GreaterThanOrEquals(start)
-                                                          .LessThanOrEquals(end)));
+                if (DateTime.TryParse(query.FilterDateFrom, out DateTime from))
+                {
+                    //dmFrom = DateMath.Anchored(new DateTime(1999, 01, 01));
+                    dateRangeQuery.GreaterThanOrEqualTo = dmFrom;
+                }
             }
 
-            //Desde y hasta 
-            if (!string.IsNullOrWhiteSpace(dateFrom) && !string.IsNullOrWhiteSpace(dateTo))
+            if (!string.IsNullOrWhiteSpace(query.FilterDateTo))
             {
-                searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration)
-                                                                .GreaterThanOrEquals(dateFrom)
-                                                                .LessThanOrEquals(dateTo)));
+                if (DateTime.TryParse(query.FilterDateTo, out DateTime to))
+                {
+                    //dmTo = DateMath.Anchored(new DateTime(1999, 12, 31));
+                    dateRangeQuery.LessThanOrEqualTo = dmTo;
+                }
             }
-
-            //Solo desde
-            if (!string.IsNullOrWhiteSpace(dateFrom) && string.IsNullOrWhiteSpace(dateTo))
-            {
-                searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateFrom)));
-            }
-
-            //Solo hasta
-            if (!string.IsNullOrWhiteSpace(dateTo) && string.IsNullOrWhiteSpace(dateFrom))
-            {
-                searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).LessThanOrEquals(dateTo)));
-            }
-
+            //searchDescriptor.Query(q => q
+            //    .Bool(bq => bq.Filter(filters)) && dateRangeQuery).Sort(s => s.Descending(f => f.CreatedDate));
 
             //Ordenar
             if (!string.IsNullOrWhiteSpace(order))
@@ -177,7 +205,7 @@ ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
                 }
             }
 
-            searchDescriptor.Query(q => termQueryId && termQueryStock && searchQuery);
+            searchDescriptor.Query(q => termQueryId && termQueryStock && searchQuery && dateRangeQuery);
 
             //searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateOfExpiration)));
 
