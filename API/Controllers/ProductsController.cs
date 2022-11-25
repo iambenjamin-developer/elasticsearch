@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-
+//https://github.com/mjebrahimi/Elasticsearch-NEST-CheatSheet-Tutorials/blob/master/README.md
 namespace API.Controllers
 {
     [Route("api/[controller]")]
@@ -92,21 +92,27 @@ namespace API.Controllers
             }
 
             //Filtrar por GUID
+            var guidSimpleQueryStringQuery = new SimpleQueryStringQuery();
             if (!string.IsNullOrWhiteSpace(guid))
             {
-                searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Guid).Query(guid)));
+                //searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Guid).Query(guid)));
+
+                guidSimpleQueryStringQuery.Fields = "guid";
+                guidSimpleQueryStringQuery.AnalyzeWildcard = true;
+                guidSimpleQueryStringQuery.Query = $"*{guid}*";
+                guidSimpleQueryStringQuery.Boost = 1.1;
             }
 
             //Filtrar por nombre ( full text)
-            var searchQuery = new WildcardQuery();
+            var nameWildCardQuery = new WildcardQuery();
             if (!string.IsNullOrWhiteSpace(name))
             {
                 //searchDescriptor.Query(q => q.Match(m => m.Field(x => x.Name).Query(name)));
 
-                searchQuery.Value = $"*{name}*";
-                searchQuery.CaseInsensitive = true;
-                searchQuery.Field = "name";
-                searchQuery.Boost = 1.1;
+                nameWildCardQuery.Value = $"*{name}*";
+                nameWildCardQuery.CaseInsensitive = true;
+                nameWildCardQuery.Field = "name";
+                nameWildCardQuery.Boost = 1.1;
             }
 
             //Filtrar por Stock
@@ -205,7 +211,7 @@ ISO_INSTANT  Date and Time of an Instant	'2011-12-03T10:15:30Z'
                 }
             }
 
-            searchDescriptor.Query(q => termQueryId && termQueryStock && searchQuery && dateRangeQuery);
+            searchDescriptor.Query(q => termQueryId && termQueryStock && nameWildCardQuery && dateRangeQuery && guidSimpleQueryStringQuery);
 
             //searchDescriptor.Query(q => q.DateRange(dt => dt.Field(f => f.DateOfExpiration).GreaterThanOrEquals(dateOfExpiration)));
 
